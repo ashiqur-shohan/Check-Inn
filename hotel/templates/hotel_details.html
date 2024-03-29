@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}
+<title>{{object.name}} Details</title>
+{% endblock title %}
+
+{% block content %}
+
+<div class="flex flex-col lg:flex-row mx-2 mt-3 gap-8">
+  <div class="lg:w-5/12">
+      <img class="rounded-lg " src="{{object.image.url}}" alt="">
+  </div>
+
+  <div class="hotel-details-container px-4 lg:w-7/12"> 
+    <h1 class="text-3xl font-bold">{{object.name}}</h1>
+    <hr class="border-t-2 border-gray-400 w-4/5 my-3 ">
+    <h3 class='text-xl'><b> Location </b>: {{object.location}}</h3>
+    <h3 class="text-l my-2">{{object.description}}</h3>
+    <h3 class='text-xl' > <b>Price: </b>  {{object.price}}</h3>
+      {% if messages %}
+        <ul class="errorlist">
+          {% for error in messages %}
+            <li class="text-red-800">{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    <!-- You can open the modal using ID.showModal() method -->
+    <div class ="modal-container my-3">
+      <button class="btn btn-primary w-1/2 lg:w-full" onclick="my_modal_3.showModal()">Book</button>
+      <dialog id="my_modal_3" class="modal">
+        <div class="modal-box">
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          </form>
+          <h3 class="font-bold text-xl text-center mb-6">Hello!</h3>
+          <div class="pl-12">
+            <form class="space-y-2" method="POST" action="{% url 'book' object.id %}">
+              {% csrf_token %}
+              <label class="font-bold text-center mr-3" for="date">Booking : </label>
+              
+              <input class="border rounded-lg px-8 py-3" type = "date" name="date">
+              <br>
+              
+              <button class="btn btn-primary " type="submit"> book now</button>
+            </form>
+          </div>
+        </div>
+      </dialog>  
+    </div> <!-- modal close -->
+
+  </div> <!-- hotel close -->
+</div> <!-- Hotel detail close -->
+
+<div class = 'review-container'>
+  <div class="heading my-4">
+    <h5 class="text-4xl font-bold text-center">Total Review : {{reviews | length}}</h5>
+    <hr class="border-t-2 border-gray-400 w-3/5 my-3 m-auto ">
+  </div>
+
+  <div class="reviews">
+    {% for review in reviews%} 
+      <div class="card-body border m-2">
+        <p> <b> {{review.account.user.first_name}} </b> {{review.created_on}} </p>
+        <p>{{review.body}} </p>
+        <p>{{review.date}} </p>
+        <p>{{review.rating}} </p>
+      </div>
+    {% endfor %}
+  </div>
+
+</div> <!-- review container close-->
+
+<div class="review-form-container px-20">
+  {% if booking_check %}
+    <form method = "POST" >
+        {% csrf_token%}
+        <div>
+        <h1 class=" text-2xl font-bold text-center" >Give Us Your Valuable Review Here.</h1>
+        </div>
+        <div class="mt-6">
+          <div>
+            <label class="flex items-center" > <b class="text-lg mr-3">Review</b>
+            {% render_field review_form.body cols="205" rows="1" placeholder="Write Your review..." class+=" bg-[#F3F3F3] lg:w-1/3 mb-4 p-6 rounded-lg" %}
+          </div>
+
+          <div class="mb-3">
+            <label class="font-bold text-lg" > Rating
+            {% render_field review_form.rating %}
+            <button type="submit" class = "btn ml-5 btn-primary"> Submit </button>
+            </div>
+          </div>
+    </form>
+  {% endif %}
+</div>
+
+{% endblock content %}
